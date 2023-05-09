@@ -7,13 +7,23 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - dbdata6:/data/db
+      - ./data:/data/db
+      - ./data/log:/var/log/mongodb/
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
     networks:
-      - mongo-network
-
-volumes:
-  dbdata6:
+      - mongo-network  
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo admin --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
   mongo-network:
     driver: bridge
+
+volumes:
+  dbdata:
+  dblog:
